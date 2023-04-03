@@ -2,7 +2,7 @@
 #include <time.h>
 #include <vector>
 #include <unordered_set>
-
+#include <set>
 
 using namespace std;
 
@@ -22,8 +22,8 @@ class Points {
             srand(time(NULL)); // seed
             for (unsigned int i = 0; i < n; i++) {
                 Point* pt = new Point;
-                pt->x = rand() % 2001 - 1000; // random x from -1000 to 1000
-                pt->y = rand() % 2001 - 1000; // random y from -1000 to 1000
+                pt->x = rand() % 201 - 100; // random x from -100 to 100
+                pt->y = rand() % 201 - 100; // random y from -100 to 100
                 p.push_back(pt);
             }
         }
@@ -102,11 +102,27 @@ class Points {
             return;
         }
 
+        bool compareHulls() {
+            set<Point*> b_set(b_hull.begin(), b_hull.end());
+            set<Point*> q_set(q_hull.begin(), q_hull.end());
+            printf("b_set.size() = %lu\n", b_set.size());
+            printf("q_set.size() = %lu\n", q_set.size());
+            return (b_set == q_set);
+        }
+
     private:
         unsigned int n; // number of points
         vector<Point*> p; // vector of points (x,y)
         vector<Point*> b_hull; // brute force
         vector<Point*> q_hull; // quick hull
+
+        /*struct set_comparator { // custom comparator helps remove duplicate points
+            bool operator() (Point* a, Point* b) const {
+                if (a->x > b->x) return true;
+                if (a->x == b->x) return (a->y > b->y);
+                else return false;
+            }
+        };*/
 
         static double distFromLine(Point* l1, Point* l2, Point* pt) {
             return (double)((l2->y - l1->y) * pt->x + (l1->x - l2->x) * pt->y + ((l1->y - l2->y) * l1->x + (l2->x - l1->x) * l1->y)) / sqrt((l2->y - l1->y) * (l2->y - l1->y) + (l1->x - l2->x) * (l1->x - l2->x));
@@ -123,7 +139,7 @@ class Points {
                 if (p.at(i) == p1 || p.at(i) == p2) continue;
                 double dist = distFromLine(p1, p2, p.at(i));
                 if (!side) dist *= -1;
-                if (dist > max_dist) {
+                if (dist >= max_dist) {
                     max_dist = dist;
                     max_p = p.at(i);
                 }

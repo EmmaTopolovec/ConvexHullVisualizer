@@ -18,10 +18,10 @@ $(EXE): Main.cpp Points.cpp
 	$(CC) $(FLAGS) Main.cpp -o $@
 
 test: $(EXE)
-	./$(EXE)
+	./$(EXE) 100
 
 clean:
 	rm -f $(OBJ)/*.o $(EXE) *.tar.gz *.txt
 	
 valgrind: $(EXE)
-	valgrind --leak-check=full --track-origins=yes --show-leak-kinds=all -s ./$(EXE)
+	valgrind --leak-check=full --track-origins=yes --show-leak-kinds=all -s ./$(EXE) 100
