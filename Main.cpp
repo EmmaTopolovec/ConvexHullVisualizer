@@ -12,8 +12,8 @@ int main(int argc, char* argv[]) {
 
     printf("\n%d points\n", atoi(argv[1]));
 
-    printf("\nPoints:\n");
-    p.printPoints();
+    // printf("\nPoints:\n");
+    // p.printPoints();
 
     chrono::time_point<chrono::high_resolution_clock> start = chrono::high_resolution_clock::now();
     p.bruteHull();
