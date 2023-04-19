@@ -3,6 +3,8 @@
 #include <vector>
 #include <unordered_set>
 #include <set>
+#include <cstdio>
+#include <cmath>
 
 using namespace std;
 
@@ -19,6 +21,32 @@ class Points {
 
         Points(unsigned int n) {
             this->n = n;
+
+            if (n == -1) {
+                this->n = 5;
+                Point* p1 = new Point;
+                p1->x = 99;
+                p1->y = 0;
+                p.push_back(p1);
+                Point* p2 = new Point;
+                p2->x = 210;
+                p2->y = 1010;
+                p.push_back(p2);
+                Point* p3 = new Point;
+                p3->x = 20201;
+                p3->y = 20;
+                p.push_back(p3);
+                Point* p4 = new Point;
+                p4->x = 345;
+                p4->y = 30;
+                p.push_back(p4);
+                Point* p5 = new Point;
+                p5->x = 252;
+                p5->y = 1250;
+                p.push_back(p5);
+                return;
+            }
+
             srand(time(NULL)); // seed
             for (unsigned int i = 0; i < n; i++) {
                 Point* pt = new Point;
@@ -26,6 +54,17 @@ class Points {
                 pt->y = rand() % 201 - 100; // random y from -100 to 100
                 p.push_back(pt);
             }
+            do {
+                set<Point*> s(p.begin(), p.end()); // makes sure there are no duplictes
+                p = vector<Point*>(s.begin(), s.end());
+                int more_points = n - s.size();
+                for (int i = 0; i < more_points; i++) {
+                     Point* pt = new Point;
+                    pt->x = rand() % 201 - 100; // random x from -100 to 100
+                    pt->y = rand() % 201 - 100; // random y from -100 to 100
+                    p.push_back(pt);
+                }
+            } while (p.size() != n); // if there were duplicates
         }
 
         ~Points() { // destructor
@@ -61,6 +100,10 @@ class Points {
 
         void bruteHull() { // Brute Force to find convex hull
             b_hull.clear(); // resets vector just in case bruteHull was called before
+            if (n < 4) {
+                b_hull = p;
+                return;
+            }
             for (unsigned int i = 0; i < n; i++) {
                 for (unsigned int j = 0; j < n; j++) { // checking if the line from i to j is on the hull
                     if (i == j) continue;
@@ -89,6 +132,10 @@ class Points {
 
         void quickHull() { // QuickHull algorithm to find convex hull
             q_hull.clear(); // resets vector just in case quickHull was called before
+            if (n < 4) {
+                q_hull = p;
+                return;
+            }
             Point* min_x = p.at(0);
             Point* max_x = p.at(0);
             for (unsigned int i = 0; i < n; i++) { // finds points with min x and max x
@@ -97,8 +144,7 @@ class Points {
             }
             quickHull(min_x, max_x, 1); // finds convex hull above the line
             quickHull(min_x, max_x, 0); // finds convex hull below the line
-            unordered_set<Point*> temp_set(q_hull.begin(), q_hull.end()); // remove duplicates
-            q_hull.assign(temp_set.begin(), temp_set.end());
+            q_hull.assign(q_hull.begin(), q_hull.end());
             return;
         }
 
@@ -116,14 +162,6 @@ class Points {
         vector<Point*> b_hull; // brute force
         vector<Point*> q_hull; // quick hull
 
-        /*struct set_comparator { // custom comparator helps remove duplicate points
-            bool operator() (Point* a, Point* b) const {
-                if (a->x > b->x) return true;
-                if (a->x == b->x) return (a->y > b->y);
-                else return false;
-            }
-        };*/
-
         static double distFromLine(Point* l1, Point* l2, Point* pt) {
             return (double)((l2->y - l1->y) * pt->x + (l1->x - l2->x) * pt->y + ((l1->y - l2->y) * l1->x + (l2->x - l1->x) * l1->y)) / sqrt((l2->y - l1->y) * (l2->y - l1->y) + (l1->x - l2->x) * (l1->x - l2->x));
         }
@@ -139,7 +177,7 @@ class Points {
                 if (p.at(i) == p1 || p.at(i) == p2) continue;
                 double dist = distFromLine(p1, p2, p.at(i));
                 if (!side) dist *= -1;
-                if (dist >= max_dist) {
+                if (dist > max_dist) {
                     max_dist = dist;
                     max_p = p.at(i);
                 }
@@ -147,6 +185,13 @@ class Points {
             if (max_p == nullptr) { // no point on this side of line found
                 q_hull.push_back(p1);
                 q_hull.push_back(p2);
+                for (unsigned int i = 0; i < n; i++) {
+                    if (p.at(i) == p1 || p.at(i) == p2) continue;
+                    double dist = distFromLine(p1, p2, p.at(i));
+                    if (dist == 0) {
+                        q_hull.push_back(p.at(i));
+                    }
+                }
                 return;
             }
             quickHull(p1, max_p, (distFromLine(p1, max_p, p2) < 0));
