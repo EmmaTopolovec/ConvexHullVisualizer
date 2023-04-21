@@ -5,6 +5,7 @@
 #include <set>
 #include <cstdio>
 #include <cmath>
+#include <algorithm>
 
 using namespace std;
 
@@ -106,12 +107,12 @@ class Points {
             }
             set<Point*, set_comparator> b_set(b_hull.begin(), b_hull.end()); // remove dupes
             b_hull = vector<Point*>(b_set.begin(), b_set.end());
+            sort(b_hull.begin(), b_hull.end(), sortByPolar);
             return;
         }
 
         void quickHull() { // QuickHull algorithm to find convex hull
             q_hull.clear(); // resets vector just in case quickHull was called before
-            // printf("quickHull()\n");
             if (n < 4) {
                 q_hull = p;
                 return;
@@ -122,20 +123,16 @@ class Points {
                 if (p.at(i)->x > max_x->x) max_x = p.at(i);
                 if (p.at(i)->x < min_x->x) min_x = p.at(i);
             }
-            // ("quickHull(min_x(%i, %i), max_x(%i, %i), above)\n", min_x->x, min_x->y, max_x->x, max_x->y);
             quickHull(min_x, max_x, 1); // finds convex hull above the line
-            // printf("quickHull(min_x(%i, %i), max_x(%i, %i), below)\n", min_x->x, min_x->y, max_x->x, max_x->y);
             quickHull(min_x, max_x, 0); // finds convex hull below the line
-            // printf("Done\n");
             q_hull.assign(q_hull.begin(), q_hull.end());
             set<Point*, set_comparator> q_set(q_hull.begin(), q_hull.end()); // remove dupes
             q_hull = vector<Point*>(q_set.begin(), q_set.end());
+            sort(q_hull.begin(), q_hull.end(), sortByPolar);
             return;
         }
 
         bool compareHulls() {
-            // set<Point*, set_comparator> b_set(b_hull.begin(), b_hull.end());
-            // set<Point*, set_comparator> q_set(q_hull.begin(), q_hull.end());
             printf("b_set.size() = %lu\n", b_hull.size());
             printf("q_set.size() = %lu\n", q_hull.size());
             return (b_hull == q_hull);
@@ -159,8 +156,10 @@ class Points {
             return (double)((l2->y - l1->y) * pt->x + (l1->x - l2->x) * pt->y + ((l1->y - l2->y) * l1->x + (l2->x - l1->x) * l1->y)) / sqrt((l2->y - l1->y) * (l2->y - l1->y) + (l1->x - l2->x) * (l1->x - l2->x));
         }
 
-        static bool sortByX(Point* p1, Point* p2) {
-            return (p1->x < p2->x);
+        static bool sortByPolar(Point* p1, Point* p2) {
+            double p1Angle = atan2(p1->y - 0, p1->x - 0); 
+            double p2Angle = atan2(p2->y - 0, p2->x - 0);           
+            return p1Angle < p2Angle;
         }
 
         void quickHull(Point* p1, Point* p2, bool side) {
@@ -177,22 +176,17 @@ class Points {
             }
             if (max_p == nullptr) { // no point on this side of line found
                 q_hull.push_back(p1);
-                // printf("Adding (%i, %i)\n", p1->x, p1->y);
                 q_hull.push_back(p2);
-                // printf("Adding (%i, %i)\n", p2->x, p2->y);
                 for (unsigned int i = 0; i < n; i++) {
                     if (p.at(i) == p1 || p.at(i) == p2) continue;
                     double dist = distFromLine(p1, p2, p.at(i));
                     if (dist == 0) {
                         q_hull.push_back(p.at(i));
-                        // printf("Adding! (%i, %i)\n", p.at(i)->x, p.at(i)->y);
                     }
                 }
                 return;
             }
-            // ("quickHull(p1(%i, %i), max_p(%i, %i), %i)\n", p1->x, p1->y, max_p->x, max_p->y, (distFromLine(p1, max_p, p2) < 0));
             quickHull(p1, max_p, (distFromLine(p1, max_p, p2) < 0));
-            // printf("quickHull(p2(%i, %i), max_p(%i, %i), %i)\n", p2->x, p2->y, max_p->x, max_p->y, (distFromLine(p2, max_p, p1) < 0));
             quickHull(p2, max_p, (distFromLine(p2, max_p, p1) < 0));
             return;
         }
