@@ -7,19 +7,19 @@ A simple program in C++ that allows users to see the difference between a brute-
 
 *make 10*
 
-![image not found](https://github.com/EmmaTopolovec/ConvexHullVisualizer/blob/main/make10.jpg?raw=true)
+![image not found](https://github.com/EmmaTopolovec/ConvexHullVisualizer/blob/main/results/make10.png?raw=true)
 
 
 *make 50*
 
-![image not found](https://github.com/EmmaTopolovec/ConvexHullVisualizer/blob/main/make50.jpg?raw=true)
+![image not found](https://github.com/EmmaTopolovec/ConvexHullVisualizer/blob/main/results/make50.png?raw=true)
 
 
 *make 100*
 
-![image not found](https://github.com/EmmaTopolovec/ConvexHullVisualizer/blob/main/make100.jpg?raw=true)
+![image not found](https://github.com/EmmaTopolovec/ConvexHullVisualizer/blob/main/results/make100.png?raw=true)
 
 
 *make 1000*
 
-![image not found](https://github.com/EmmaTopolovec/ConvexHullVisualizer/blob/main/make1000.jpg?raw=true)
+![image not found](https://github.com/EmmaTopolovec/ConvexHullVisualizer/blob/main/results/make1000.png?raw=true)
