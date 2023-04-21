@@ -20,6 +20,10 @@ $(EXE): Main.cpp Points.cpp
 test: $(EXE)
 	./$(EXE) 100
 
+output: $(EXE)
+	./$(EXE) 100 > output.txt
+	python3 output.py output.txt
+
 clean:
 	rm -f $(OBJ)/*.o $(EXE) *.tar.gz *.txt
 	
